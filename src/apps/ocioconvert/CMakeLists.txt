@@ -40,3 +40,7 @@ ocio_strip_binary(ocioconvert)
 install(TARGETS ocioconvert
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_custom_command(TARGET ocioconvert POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:ocioconvert> $<TARGET_FILE_DIR:ocioconvert>
+  COMMAND_EXPAND_LISTS)

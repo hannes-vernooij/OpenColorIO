@@ -16,7 +16,7 @@ if(APPLE)
     set(CUSTOM_COMPILE_FLAGS "${CUSTOM_COMPILE_FLAGS};-DGL_SILENCE_DEPRECATION")
 endif()
 
-set_target_properties(ociodisplay PROPERTIES 
+set_target_properties(ociodisplay PROPERTIES
     COMPILE_OPTIONS "${CUSTOM_COMPILE_FLAGS}"
     LINK_OPTIONS "${PLATFORM_LINK_OPTIONS}"
 )
@@ -28,7 +28,7 @@ if (USE_MSVC)
 	target_compile_options(ociodisplay PRIVATE /wd4267 /wd4244)
 endif()
 
-target_include_directories(ociodisplay 
+target_include_directories(ociodisplay
     SYSTEM
     PRIVATE
         ${GLEW_INCLUDE_DIRS}

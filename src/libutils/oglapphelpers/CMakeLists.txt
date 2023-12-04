@@ -48,7 +48,7 @@ if(APPLE)
     set(CUSTOM_COMPILE_FLAGS "${CUSTOM_COMPILE_FLAGS};-DGL_SILENCE_DEPRECATION")
 endif()
 
-set_target_properties(oglapphelpers PROPERTIES 
+set_target_properties(oglapphelpers PROPERTIES
     COMPILE_OPTIONS "${CUSTOM_COMPILE_FLAGS}"
     LINK_OPTIONS "${PLATFORM_LINK_OPTIONS}"
 )
@@ -116,7 +116,7 @@ if(${OCIO_EGL_HEADLESS})
     )
 endif()
 
-install(TARGETS oglapphelpers 
+install(TARGETS oglapphelpers
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )

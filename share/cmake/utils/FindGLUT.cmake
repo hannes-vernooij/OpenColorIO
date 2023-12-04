@@ -104,7 +104,13 @@ if(WIN32)
     HINTS
     ${PC_GLUT_LIBRARY_DIRS}
     )
-  mark_as_advanced(GLUT_glut_LIBRARY_RELEASE GLUT_glut_LIBRARY_DEBUG)
+
+    find_file(GLUT_glut_DLL freeglut.dll
+        PATHS
+        ${GLUT_ROOT_PATH}/bin/${_arch}
+    )
+
+  mark_as_advanced(GLUT_glut_DLL GLUT_glut_LIBRARY_RELEASE GLUT_glut_LIBRARY_DEBUG)
   select_library_configurations(GLUT_glut)
 elseif(APPLE)
   find_path(GLUT_INCLUDE_DIR glut.h PATHS ${OPENGL_LIBRARY_DIR} HINTS ${PC_GLUT_INCLUDE_DIRS})
@@ -191,21 +197,35 @@ if (GLUT_FOUND)
   endforeach()
 
   if(NOT TARGET GLUT::GLUT)
-    add_library(GLUT::GLUT UNKNOWN IMPORTED)
+    add_library(GLUT::GLUT SHARED IMPORTED)
     set_target_properties(GLUT::GLUT PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${GLUT_INCLUDE_DIRS}")
     if(GLUT_glut_LIBRARY_RELEASE)
       set_property(TARGET GLUT::GLUT APPEND PROPERTY
         IMPORTED_CONFIGURATIONS RELEASE)
-      set_target_properties(GLUT::GLUT PROPERTIES
-        IMPORTED_LOCATION_RELEASE "${GLUT_glut_LIBRARY_RELEASE}")
+      if (WIN32)
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_IMPLIB_RELEASE "${GLUT_glut_LIBRARY_RELEASE}")
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_LOCATION_RELEASE "${GLUT_glut_DLL}")
+      else()
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_LOCATION_RELEASE "${GLUT_glut_LIBRARY_RELEASE}")
+      endif()
     endif()
 
     if(GLUT_glut_LIBRARY_DEBUG)
       set_property(TARGET GLUT::GLUT APPEND PROPERTY
         IMPORTED_CONFIGURATIONS DEBUG)
-      set_target_properties(GLUT::GLUT PROPERTIES
-        IMPORTED_LOCATION_DEBUG "${GLUT_glut_LIBRARY_DEBUG}")
+      if (WIN32)
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_IMPLIB_DEBUG "${GLUT_glut_LIBRARY_DEBUG}")
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_LOCATION_DEBUG "${GLUT_glut_DLL}")
+      else()
+          set_target_properties(GLUT::GLUT PROPERTIES
+              IMPORTED_LOCATION_DEBUG "${GLUT_glut_LIBRARY_DEBUG}")
+      endif()
     endif()
 
     if(NOT GLUT_glut_LIBRARY_RELEASE AND NOT GLUT_glut_LIBRARY_DEBUG)

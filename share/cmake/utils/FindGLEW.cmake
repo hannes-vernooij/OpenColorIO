@@ -183,6 +183,12 @@ find_library(GLEW_SHARED_LIBRARY_DEBUG
              PATHS ENV GLEW_ROOT)
 
 
+find_file(GLEW_DLL
+    NAME glew32.dll
+    PATH_SUFFIXES bin bin/Release/${_arch}
+    PATHS ENV GLEW_ROOT)
+
+
 __glew_set_find_library_suffix(STATIC)
 
 find_library(GLEW_STATIC_LIBRARY_RELEASE
@@ -256,7 +262,7 @@ if(NOT TARGET GLEW::glew AND NOT GLEW_USE_STATIC_LIBS)
     message(STATUS "FindGLEW: Creating GLEW::glew imported target.")
   endif()
 
-  add_library(GLEW::glew UNKNOWN IMPORTED)
+  add_library(GLEW::glew SHARED IMPORTED)
 
   set_target_properties(GLEW::glew
                         PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
@@ -271,8 +277,15 @@ if(NOT TARGET GLEW::glew AND NOT GLEW_USE_STATIC_LIBS)
                  APPEND
                  PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 
-    set_target_properties(GLEW::glew
-                          PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_SHARED_LIBRARY_RELEASE}")
+    if (WIN32)
+        set_target_properties(GLEW::glew
+                            PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_DLL}")
+        set_target_properties(GLEW::glew
+                            PROPERTIES IMPORTED_IMPLIB_RELEASE "${GLEW_SHARED_LIBRARY_RELEASE}")
+    else()
+        set_target_properties(GLEW::glew
+                            PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_SHARED_LIBRARY_RELEASE}")
+    endif()
   endif()
 
   if(GLEW_SHARED_LIBRARY_DEBUG)
@@ -280,98 +293,105 @@ if(NOT TARGET GLEW::glew AND NOT GLEW_USE_STATIC_LIBS)
                  APPEND
                  PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 
-    set_target_properties(GLEW::glew
-                          PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_SHARED_LIBRARY_DEBUG}")
-  endif()
-
-elseif(NOT TARGET GLEW::glew_s AND GLEW_USE_STATIC_LIBS)
-  if(GLEW_VERBOSE)
-    message(STATUS "FindGLEW: Creating GLEW::glew_s imported target.")
-  endif()
-
-  add_library(GLEW::glew_s UNKNOWN IMPORTED)
-
-  set_target_properties(GLEW::glew_s
-                        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
-
-  if(APPLE)
-    set_target_properties(GLEW::glew_s
-                          PROPERTIES INTERFACE_LINK_LIBRARIES OpenGL::GL)
-  endif()
-
-  if(GLEW_STATIC_LIBRARY_RELEASE)
-    set_property(TARGET GLEW::glew_s
-                 APPEND
-                 PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-
-    set_target_properties(GLEW::glew_s
-                          PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_STATIC_LIBRARY_RELEASE}")
-  endif()
-
-  if(GLEW_STATIC_LIBRARY_DEBUG)
-    set_property(TARGET GLEW::glew_s
-                 APPEND
-                 PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-
-    set_target_properties(GLEW::glew_s
-                          PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_STATIC_LIBRARY_DEBUG}")
-  endif()
-endif()
-
-if(NOT TARGET GLEW::GLEW)
-  if(GLEW_VERBOSE)
-    message(STATUS "FindGLEW: Creating GLEW::GLEW imported target.")
-  endif()
-
-  add_library(GLEW::GLEW UNKNOWN IMPORTED)
-
-  set_target_properties(GLEW::GLEW
-                        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
-
-  if(APPLE)
-    set_target_properties(GLEW::GLEW
-                          PROPERTIES INTERFACE_LINK_LIBRARIES OpenGL::GL)
-  endif()
-
-  if(TARGET GLEW::glew)
-    if(GLEW_SHARED_LIBRARY_RELEASE)
-      set_property(TARGET GLEW::GLEW
-                   APPEND
-                   PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-
-      set_target_properties(GLEW::GLEW
-                            PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_SHARED_LIBRARY_RELEASE}")
-    endif()
-
-    if(GLEW_SHARED_LIBRARY_DEBUG)
-      set_property(TARGET GLEW::GLEW
-                   APPEND
-                   PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-
-      set_target_properties(GLEW::GLEW
+    if (WIN32)
+        set_target_properties(GLEW::glew
+                            PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_DLL}")
+        set_target_properties(GLEW::glew
+                            PROPERTIES IMPORTED_IMPLIB_DEBUG "${GLEW_SHARED_LIBRARY_DEBUG}")
+    else()
+        set_target_properties(GLEW::glew
                             PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_SHARED_LIBRARY_DEBUG}")
     endif()
-
-  elseif(TARGET GLEW::glew_s)
-    if(GLEW_STATIC_LIBRARY_RELEASE)
-      set_property(TARGET GLEW::GLEW
-                   APPEND
-                   PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-
-      set_target_properties(GLEW::GLEW
-                            PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_STATIC_LIBRARY_RELEASE}")
-    endif()
-
-    if(GLEW_STATIC_LIBRARY_DEBUG AND GLEW_USE_STATIC_LIBS)
-      set_property(TARGET GLEW::GLEW
-                   APPEND
-                   PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-
-      set_target_properties(GLEW::GLEW
-                            PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_STATIC_LIBRARY_DEBUG}")
-    endif()
-
-  elseif(GLEW_VERBOSE)
-    message(WARNING "FindGLEW: no `GLEW::glew` or `GLEW::glew_s` target was created. Something went wrong in FindGLEW target creation.")
   endif()
+
+# elseif(NOT TARGET GLEW::glew_s AND GLEW_USE_STATIC_LIBS)
+#   if(GLEW_VERBOSE)
+#     message(STATUS "FindGLEW: Creating GLEW::glew_s imported target.")
+#   endif()
+
+#   add_library(GLEW::glew_s UNKNOWN IMPORTED)
+
+#   set_target_properties(GLEW::glew_s
+#                         PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
+
+#   if(APPLE)
+#     set_target_properties(GLEW::glew_s
+#                           PROPERTIES INTERFACE_LINK_LIBRARIES OpenGL::GL)
+#   endif()
+
+#   if(GLEW_STATIC_LIBRARY_RELEASE)
+#     set_property(TARGET GLEW::glew_s
+#                  APPEND
+#                  PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+
+#     set_target_properties(GLEW::glew_s
+#                           PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_STATIC_LIBRARY_RELEASE}")
+#   endif()
+
+#   if(GLEW_STATIC_LIBRARY_DEBUG)
+#     set_property(TARGET GLEW::glew_s
+#                  APPEND
+#                  PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+
+#     set_target_properties(GLEW::glew_s
+#                           PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_STATIC_LIBRARY_DEBUG}")
+#   endif()
 endif()
+
+# if(NOT TARGET GLEW::GLEW)
+#   if(GLEW_VERBOSE)
+#     message(STATUS "FindGLEW: Creating GLEW::GLEW imported target.")
+#   endif()
+
+#   add_library(GLEW::GLEW UNKNOWN IMPORTED)
+
+#   set_target_properties(GLEW::GLEW
+#                         PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
+
+#   if(APPLE)
+#     set_target_properties(GLEW::GLEW
+#                           PROPERTIES INTERFACE_LINK_LIBRARIES OpenGL::GL)
+#   endif()
+
+#   if(TARGET GLEW::glew)
+#     if(GLEW_SHARED_LIBRARY_RELEASE)
+#       set_property(TARGET GLEW::GLEW
+#                    APPEND
+#                    PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+
+#       set_target_properties(GLEW::GLEW
+#                             PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_SHARED_LIBRARY_RELEASE}")
+#     endif()
+
+#     if(GLEW_SHARED_LIBRARY_DEBUG)
+#       set_property(TARGET GLEW::GLEW
+#                    APPEND
+#                    PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+
+#       set_target_properties(GLEW::GLEW
+#                             PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_SHARED_LIBRARY_DEBUG}")
+#     endif()
+
+#   elseif(TARGET GLEW::glew_s)
+#     if(GLEW_STATIC_LIBRARY_RELEASE)
+#       set_property(TARGET GLEW::GLEW
+#                    APPEND
+#                    PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+
+#       set_target_properties(GLEW::GLEW
+#                             PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_STATIC_LIBRARY_RELEASE}")
+#     endif()
+
+#     if(GLEW_STATIC_LIBRARY_DEBUG AND GLEW_USE_STATIC_LIBS)
+#       set_property(TARGET GLEW::GLEW
+#                    APPEND
+#                    PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+
+#       set_target_properties(GLEW::GLEW
+#                             PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_STATIC_LIBRARY_DEBUG}")
+#     endif()
+
+#   elseif(GLEW_VERBOSE)
+#     message(WARNING "FindGLEW: no `GLEW::glew` or `GLEW::glew_s` target was created. Something went wrong in FindGLEW target creation.")
+#   endif()
+# endif()

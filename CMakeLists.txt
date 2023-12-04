@@ -8,8 +8,9 @@
 cmake_minimum_required(VERSION 3.21) # For TARGET_RUNTIME_DLLS
 
 set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
+    # Use our fixed GLEW/GLUT script first!
     ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/utils
+    ${CMAKE_MODULE_PATH}
     ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/macros
     ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules
     ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules/install

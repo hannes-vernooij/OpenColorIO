@@ -56,7 +56,7 @@ set_target_properties(oglapphelpers PROPERTIES
 target_include_directories(oglapphelpers
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-    PRIVATE
+    PRIVATE # TODO: Make public and yoink from ociodisplay
         ${OPENGL_INCLUDE_DIR}
         ${GLEW_INCLUDE_DIRS}
         ${GLUT_INCLUDE_DIR}
@@ -70,7 +70,7 @@ if(${OCIO_USE_GLVND})
                 ${OPENGL_EGL_INCLUDE_DIRS}
         )
         target_link_libraries(oglapphelpers
-            PRIVATE
+            PUBLIC
                 OpenColorIO
                 OpenGL::OpenGL
                 OpenGL::GLU
@@ -80,7 +80,7 @@ if(${OCIO_USE_GLVND})
             )
     else()
         target_link_libraries(oglapphelpers
-            PRIVATE
+            PUBLIC
                 OpenColorIO
                 OpenGL::OpenGL
                 OpenGL::GLU
@@ -91,7 +91,7 @@ if(${OCIO_USE_GLVND})
 else()
     # if OCIO_USE_GLVND is OFF, OCIO_EGL_HEADLESS is also OFF
     target_link_libraries(oglapphelpers
-        PRIVATE
+        PUBLIC
             OpenColorIO
             ${OPENGL_LIBRARIES}
             ${GLEW_LIBRARIES}

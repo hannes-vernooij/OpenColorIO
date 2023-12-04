@@ -32,6 +32,8 @@ target_link_libraries(ocioconvert
         apputils
         imageioapphelpers
         OpenColorIO
+        GLEW::glew
+        GLUT::GLUT
 )
 
 include(StripUtils)

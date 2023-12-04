@@ -38,9 +38,6 @@ target_include_directories(ociodisplay
 
 target_link_libraries(ociodisplay
     PRIVATE
-        ${GLEW_LIBRARIES}
-        ${GLUT_LIBRARIES}
-        ${OPENGL_LIBRARIES}
         apputils
         imageioapphelpers
         oglapphelpers

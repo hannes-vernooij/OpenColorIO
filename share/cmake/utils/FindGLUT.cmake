@@ -80,19 +80,27 @@ if(WIN32)
     PATHS  ${GLUT_ROOT_PATH}/include
     HINTS ${PC_GLUT_INCLUDE_DIRS})
   mark_as_advanced(GLUT_INCLUDE_DIR)
+
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(_arch "x64")
+  else()
+    set(_arch "")
+  endif()
+
   find_library( GLUT_glut_LIBRARY_RELEASE NAMES freeglut glut glut32
     PATHS
     ${OPENGL_LIBRARY_DIR}
-    ${GLUT_ROOT_PATH}/Release
+    ${GLUT_ROOT_PATH}/lib/${_arch}
     HINTS
     ${PC_GLUT_LIBRARY_DIRS}
-    )
+  )
+    # message(FATAL_ERROR "Hello! ${GLUT_ROOT_PATH}/lib/${_arch} ${PC_GLUT_LIBRARY_DIRS}")
 # N.B. As the pkg-config cannot distinguish between release and debug libraries,
 # assume that their hint was the both Debug and Release library.
   find_library( GLUT_glut_LIBRARY_DEBUG NAMES freeglutd
     PATHS
     ${OPENGL_LIBRARY_DIR}
-    ${GLUT_ROOT_PATH}/Debug
+    ${GLUT_ROOT_PATH}/lib/${_arch}
     HINTS
     ${PC_GLUT_LIBRARY_DIRS}
     )
